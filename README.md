@@ -178,5 +178,29 @@ The project started with a personal knowledge base and was then extended into a 
 
 &#x20;                               ▼
 
+
+
+# 📚 Project Documentation
+
+A complete development walkthrough is available on NextWork:
+
+👉 [View the full project documentation](https://nextwork.ai/enthusiastic_blue_brave_oriental_melon/docs/99ec4595-3d7b-5584-a799-aafb9c373bbb)
+
+The documentation covers:
+
+- Introduction to the project
+- Manual RAG implementation
+- Retrieval, Augmentation and Generation
+- Embeddings
+- Personal knowledge-base creation
+- Semantic search
+- FastAPI implementation
+- `/ask` endpoint
+- Swagger API testing
+- Multi-user AI directory
+- `/documents` endpoint
+- ChromaDB metadata filtering
+- Testing user-specific retrieval
+- Project challenges and learnings
 &#x20;                      Grounded Response
 
