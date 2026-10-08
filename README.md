@@ -1,186 +1,162 @@
-\# 🧠 RAG API with FastAPI, ChromaDB \& Ollama
+# 🧠 RAG API with FastAPI, ChromaDB & Ollama
 
-
-
-A Retrieval-Augmented Generation (RAG) API built with \*\*FastAPI, ChromaDB, and Ollama\*\*.
-
-
+A Retrieval-Augmented Generation (RAG) API built with **FastAPI, ChromaDB, and Ollama**.
 
 This project demonstrates how a RAG pipeline retrieves relevant information from a knowledge base, augments an LLM prompt with the retrieved context, and generates a grounded response.
 
+The project was later extended to support **multiple user profiles** using ChromaDB metadata filtering.
 
+---
 
-The project was later extended to support \*\*multiple user profiles\*\* using ChromaDB metadata filtering.
-
-
-
-\---
-
-
-
-\## 📌 Overview
-
-
+## 📌 Overview
 
 Large Language Models can generate responses using their trained knowledge, but they do not automatically have access to custom or private information.
 
-
-
-\*\*Retrieval-Augmented Generation (RAG)\*\* solves this by retrieving relevant information from an external knowledge base and providing it to the language model as context.
-
-
+**Retrieval-Augmented Generation (RAG)** solves this by retrieving relevant information from an external knowledge base and providing it to the language model as context.
 
 This project implements a complete local RAG pipeline using:
 
-
-
-\- FastAPI
-
-\- ChromaDB
-
-\- Ollama
-
-\- `nomic-embed-text`
-
-\- `qwen2.5:0.5b`
-
-
+- FastAPI
+- ChromaDB
+- Ollama
+- `nomic-embed-text`
+- `qwen2.5:0.5b`
 
 The project started with a personal knowledge base and was then extended into a multi-user retrieval system.
 
+---
 
+## 🚀 Features
 
-\---
+- 🔎 Semantic search
+- 🧠 Retrieval-Augmented Generation
+- ⚡ FastAPI REST API
+- 🗃️ Persistent ChromaDB vector database
+- 🤖 Local LLM inference using Ollama
+- 🔢 Text embeddings using `nomic-embed-text`
+- 💬 Response generation using `qwen2.5:0.5b`
+- 👥 Multi-user profile support
+- 🏷️ Metadata filtering
+- 📄 Document/profile ingestion
+- ✂️ Paragraph-based document chunking
+- 🧪 Swagger UI API testing
+- 💻 Fully local AI pipeline
 
+---
 
-
-\# 🚀 Features
-
-
-
-\- 🔎 Semantic search
-
-\- 🧠 Retrieval-Augmented Generation
-
-\- ⚡ FastAPI REST API
-
-\- 🗃️ Persistent ChromaDB vector database
-
-\- 🤖 Local LLM inference using Ollama
-
-\- 🔢 Text embeddings using `nomic-embed-text`
-
-\- 💬 Response generation using `qwen2.5:0.5b`
-
-\- 👥 Multi-user profile support
-
-\- 🏷️ Metadata filtering
-
-\- 📄 Document/profile ingestion
-
-\- ✂️ Paragraph-based document chunking
-
-\- 🧪 Swagger UI API testing
-
-\- 💻 Fully local AI pipeline
-
-
-
-\---
-
-
-
-\# 🏗️ Architecture
-
-
+## 🏗️ Architecture
 
 ```text
+                        ┌──────────────┐
+                        │     User     │
+                        └──────┬───────┘
+                               │
+                               ▼
+                      ┌─────────────────┐
+                      │     FastAPI     │
+                      │      API        │
+                      └────────┬────────┘
+                               │
+                  ┌────────────┴────────────┐
+                  │                         │
+                  ▼                         ▼
+           POST /documents             GET /ask
+                  │                         │
+                  ▼                         ▼
+           Document Chunks             User Query
+                  │                         │
+                  ▼                         ▼
+             ChromaDB              Ollama Embeddings
+                  │                         │
+                  │                         ▼
+                  │                   Query Vector
+                  │                         │
+                  └────────────┬────────────┘
+                               ▼
+                          ChromaDB
+                     Semantic Similarity
+                          Search
+                               │
+                               ▼
+                      Relevant Chunks
+                               │
+                               ▼
+                      Augmented Prompt
+                               │
+                               ▼
+                         Ollama LLM
+                        qwen2.5:0.5b
+                               │
+                               ▼
+                      Grounded Response
+```
 
-&#x20;                        ┌──────────────┐
+---
 
-&#x20;                        │     User     │
+## 📡 API Endpoints
 
-&#x20;                        └──────┬───────┘
+| Method | Endpoint      | Description                                      |
+|--------|---------------|--------------------------------------------------|
+| `POST` | `/documents`  | Ingest a user profile (chunked + embedded)       |
+| `GET`  | `/ask`        | Ask a question (optional `user` filter)          |
 
-&#x20;                               │
+### Example: Add a document
 
-&#x20;                               ▼
+```bash
+curl -X POST "http://localhost:8000/documents" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_name": "prajwal",
+    "content": "My name is Prajwal Mane.\n\nI am learning cloud and AI."
+  }'
+```
 
-&#x20;                      ┌─────────────────┐
+### Example: Ask a question (all users)
 
-&#x20;                      │     FastAPI     │
+```bash
+curl "http://localhost:8000/ask?question=What%20is%20my%20name"
+```
 
-&#x20;                      │      API        │
+### Example: Ask a question (filtered by user)
 
-&#x20;                      └────────┬────────┘
+```bash
+curl "http://localhost:8000/ask?question=What%20is%20my%20name&user=prajwal"
+```
 
-&#x20;                               │
+---
 
-&#x20;                  ┌────────────┴────────────┐
+## 🛠️ Setup
 
-&#x20;                  │                         │
+1. Install [Ollama](https://ollama.com/) and pull the models:
 
-&#x20;                  ▼                         ▼
+```bash
+ollama pull nomic-embed-text
+ollama pull qwen2.5:0.5b
+```
 
-&#x20;           POST /documents             GET /ask
+2. Install Python dependencies (example):
 
-&#x20;                  │                         │
+```bash
+pip install fastapi uvicorn chromadb ollama
+```
 
-&#x20;                  ▼                         ▼
+3. (Optional) Build the initial knowledge base from `profile.txt`:
 
-&#x20;           Document Chunks             User Query
+```bash
+python build_knowledge_base.py
+```
 
-&#x20;                  │                         │
+4. Run the API:
 
-&#x20;                  ▼                         ▼
+```bash
+uvicorn main:app --reload
+```
 
-&#x20;             ChromaDB              Ollama Embeddings
+5. Open Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-&#x20;                  │                         │
+---
 
-&#x20;                  │                         ▼
-
-&#x20;                  │                   Query Vector
-
-&#x20;                  │                         │
-
-&#x20;                  └────────────┬────────────┘
-
-&#x20;                               ▼
-
-&#x20;                          ChromaDB
-
-&#x20;                     Semantic Similarity
-
-&#x20;                          Search
-
-&#x20;                               │
-
-&#x20;                               ▼
-
-&#x20;                      Relevant Chunks
-
-&#x20;                               │
-
-&#x20;                               ▼
-
-&#x20;                      Augmented Prompt
-
-&#x20;                               │
-
-&#x20;                               ▼
-
-&#x20;                         Ollama LLM
-
-&#x20;                        qwen2.5:0.5b
-
-&#x20;                               │
-
-&#x20;                               ▼
-
-
-
-# 📚 Project Documentation
+## 📚 Project Documentation
 
 A complete development walkthrough is available on NextWork:
 
@@ -202,5 +178,11 @@ The documentation covers:
 - ChromaDB metadata filtering
 - Testing user-specific retrieval
 - Project challenges and learnings
-&#x20;                      Grounded Response
 
+---
+
+## 👤 Author
+
+**Prajwal Mane** ([@Prajwallll22](https://github.com/Prajwallll22))
+
+CSE Cybersecurity student · Cloud Security & AWS · Building with AI & DevSecOps
